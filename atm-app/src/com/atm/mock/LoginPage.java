@@ -11,9 +11,6 @@ public class LoginPage {
         // arraylist to store all accounts in the system
         ArrayList<Account> accounts = new ArrayList<>();
 
-        // arraylist to store all cardnumbers
-        ArrayList<String> cardNumbers = new ArrayList<>();
-
         // ask the user to choose operation
         Scanner sc = new Scanner(System.in);
 
@@ -34,39 +31,14 @@ public class LoginPage {
                         System.out.println("There's no account in the system, please register first");
                         continue;
                     } else {
-                        // login process
-                        System.out.println("Please enter the card number: ");
-                        String cardNumber = sc.next();
-
-                        // check if card number exists
-                        Account account = getAccountByCard(accounts, cardNumber);
-
-                        while (account == null) {
-                            System.out.println("Card Number entered is not found, please try again");
-
-                            cardNumber = sc.next();
-                            account = getAccountByCard(accounts, cardNumber);
-                        }
-
-                        boolean success = false;
-
-                        // ask for the password, 3 chances in total
-                        for (int i = 0; i < 3; i++) {
-                            System.out.println("Please enter the password: ");
-                            String password = sc.next();
-
-                            if (!password.equals(account.getPassword())) {
-                                System.out.println("Password incorrect, you have " + (2-i) + " chance(s) left");
-                            } else {
-                                System.out.println("Successfully login!");
-                                success = true;
-                                break;
-                            }
-                        }
+                        // login process starts
+                        boolean success = login(sc, accounts);
 
                         // after 3 times of failure, go back to main page
                         if (!success) {
                             continue;
+                        } else {
+                            System.out.println("Successfully login!");
                         }
 
                     }
@@ -74,49 +46,7 @@ public class LoginPage {
 
                 // 2. Register
                 case 2:
-                    System.out.println("Please enter your name: ");
-                    String name = sc.next();
-                    System.out.println("Please enter your password: ");
-                    String firstPassword = sc.next();
-                    System.out.println("Please confirm your password: ");
-                    String secondPassword = sc.next();
-
-                    // make sure the confirm password is same as first time entered
-                    while (!secondPassword.equals(firstPassword)) {
-                        System.out.println("Password entered is different, please try again");
-                        secondPassword = sc.next();
-                    }
-
-                    System.out.println("Please enter the limit of withdraw money");
-                    double limit = sc.nextDouble();
-
-                    // randomly generate the 16-digits card number for the user
-
-                    Random rc = new Random();
-                    String newCardNumber = "";
-                    for (int i = 0; i < 10; i++) {
-                        int digit = rc.nextInt(10);
-                        newCardNumber += digit;
-                    }
-
-                    // we need to ensure the new cardnumber does not exist, otherwise repeat
-                    while (checkCardNumberExist(cardNumbers, newCardNumber)){
-                        // randomly generate the 16-digits card number for the user
-                        newCardNumber = "";
-                        for (int i = 0; i < 10; i++) {
-                            int digit = rc.nextInt(10);
-                            newCardNumber += digit;
-                        }
-                    }
-
-                    // successfully registered the account, we need to create account object for the user
-                    Account newAccount = new Account(newCardNumber, secondPassword, name, 0, limit);
-
-                    // add Account object to the accounts arraylist
-                    accounts.add(newAccount);
-
-                    System.out.println("Successfully created account, your card number is: " + newCardNumber);
-
+                    register(sc, accounts);
                     break;
 
                 default:
@@ -128,14 +58,105 @@ public class LoginPage {
     }
 
     /**
+     * login process
+     * @param sc
+     * @param accounts
+     * @return true if successfully login in else false
+     */
+    private static boolean login(Scanner sc, ArrayList<Account> accounts) {
+        // login process
+        System.out.println("Please enter the card number: ");
+        String cardNumber = sc.next();
+
+        // check if card number exists
+        Account account = getAccountByCard(accounts, cardNumber);
+
+        while (account == null) {
+            System.out.println("Card Number entered is not found, please try again");
+
+            cardNumber = sc.next();
+            account = getAccountByCard(accounts, cardNumber);
+        }
+
+        boolean success = false;
+
+        // ask for the password, 3 chances in total
+        for (int i = 0; i < 3; i++) {
+            System.out.println("Please enter the password: ");
+            String password = sc.next();
+
+            if (!password.equals(account.getPassword())) {
+                System.out.println("Password incorrect, you have " + (2-i) + " chance(s) left");
+            } else {
+                success = true;
+                break;
+            }
+        }
+
+        return success;
+
+    }
+
+    /**
+     * register the new account
+     * @param sc
+     * @param accounts
+     */
+    private static void register(Scanner sc, ArrayList<Account> accounts) {
+
+        System.out.println("Please enter your name: ");
+        String name = sc.next();
+        System.out.println("Please enter your password: ");
+        String firstPassword = sc.next();
+        System.out.println("Please confirm your password: ");
+        String secondPassword = sc.next();
+
+        // make sure the confirm password is same as first time entered
+        while (!secondPassword.equals(firstPassword)) {
+            System.out.println("Password entered is different, please try again");
+            secondPassword = sc.next();
+        }
+
+        System.out.println("Please enter the limit of withdraw money");
+        double limit = sc.nextDouble();
+
+        // randomly generate the 16-digits card number for the user
+
+        Random rc = new Random();
+        String newCardNumber = "";
+        for (int i = 0; i < 10; i++) {
+            int digit = rc.nextInt(10);
+            newCardNumber += digit;
+        }
+
+        // we need to ensure the new cardnumber does not exist, otherwise repeat
+        while (checkCardNumberExist(accounts, newCardNumber)){
+            // randomly generate the 16-digits card number for the user
+            newCardNumber = "";
+            for (int i = 0; i < 10; i++) {
+                int digit = rc.nextInt(10);
+                newCardNumber += digit;
+            }
+        }
+
+        // successfully registered the account, we need to create account object for the user
+        Account newAccount = new Account(newCardNumber, secondPassword, name, 0, limit);
+
+        // add Account object to the accounts arraylist
+        accounts.add(newAccount);
+
+        System.out.println("Successfully created account, your card number is: " + newCardNumber);
+    }
+
+    /**
      * loop through the array and check if cardnumber exists
-     * @param cardNumbers
+     * @param accounts
      * @param newCardNumber
      * @return true if exists false otherwise
      */
-    public static boolean checkCardNumberExist(ArrayList<String> cardNumbers, String newCardNumber) {
-        for (int i = 0; i < cardNumbers.size(); i++) {
-            if (cardNumbers.get(i).equals(newCardNumber)) {
+    public static boolean checkCardNumberExist(ArrayList<Account> accounts, String newCardNumber) {
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts.get(i).getCardNumber().equals(newCardNumber)) {
                 return true;
             }
         } return false;
