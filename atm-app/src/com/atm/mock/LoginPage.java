@@ -32,13 +32,43 @@ public class LoginPage {
                         continue;
                     } else {
                         // login process starts
-                        boolean success = login(sc, accounts);
+                        Account account = login(sc, accounts);
 
                         // after 3 times of failure, go back to main page
-                        if (!success) {
+                        if (account == null) {
                             continue;
-                        } else {
-                            System.out.println("Successfully login!");
+                        }
+
+                        System.out.println("Successfully login!");
+                        System.out.println("Welcome VIP " + account.getUserName() + ", your card number is: " + account.getCardNumber());
+
+                        // starts the main operation
+                        boolean exit = false;
+
+                        while (!exit) {
+                            System.out.println("You may choose one of the following operations: ");
+                            System.out.println("1. Search");
+                            System.out.println("2. Deposit");
+                            System.out.println("3. Withdraw");
+                            System.out.println("4. Transfer");
+                            System.out.println("5. Change password");
+                            System.out.println("6. Exit");
+                            System.out.println("7. Cancel account");
+
+                            operation = sc.nextInt();
+                            switch (operation) {
+                                // search info of the current account
+                                case 1:
+                                    showUserInfo(account);
+                                    break;
+                                // exit the current account
+                                case 6:
+                                    exit = true;
+                                    break;
+                                default:
+                                    System.out.println("Operation is not valid");
+                                    break;
+                            }
                         }
 
                     }
@@ -58,12 +88,27 @@ public class LoginPage {
     }
 
     /**
+     * show the user account's information
+     * @param account
+     */
+    private static void showUserInfo(Account account) {
+
+        System.out.println("Welcome to the user information page");
+        System.out.println("Below are your account's information");
+        System.out.println("Card Number: " + account.getCardNumber());
+        System.out.println("Name: " + account.getUserName());
+        System.out.println("Balance: " + account.getBalance());
+        System.out.println("Current withdraw limit: " + account.getLimit());
+
+    }
+
+    /**
      * login process
      * @param sc
      * @param accounts
-     * @return true if successfully login in else false
+     * @return account if successfully login in else null
      */
-    private static boolean login(Scanner sc, ArrayList<Account> accounts) {
+    private static Account login(Scanner sc, ArrayList<Account> accounts) {
         // login process
         System.out.println("Please enter the card number: ");
         String cardNumber = sc.next();
@@ -93,7 +138,11 @@ public class LoginPage {
             }
         }
 
-        return success;
+        if (success) {
+            return account;
+        }
+
+        return null;
 
     }
 
