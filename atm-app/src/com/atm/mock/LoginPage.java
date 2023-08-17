@@ -40,36 +40,8 @@ public class LoginPage {
                         }
 
                         System.out.println("Successfully login!");
-                        System.out.println("Welcome VIP " + account.getUserName() + ", your card number is: " + account.getCardNumber());
 
-                        // starts the main operation
-                        boolean exit = false;
-
-                        while (!exit) {
-                            System.out.println("You may choose one of the following operations: ");
-                            System.out.println("1. Search");
-                            System.out.println("2. Deposit");
-                            System.out.println("3. Withdraw");
-                            System.out.println("4. Transfer");
-                            System.out.println("5. Change password");
-                            System.out.println("6. Exit");
-                            System.out.println("7. Cancel account");
-
-                            operation = sc.nextInt();
-                            switch (operation) {
-                                // search info of the current account
-                                case 1:
-                                    showUserInfo(account);
-                                    break;
-                                // exit the current account
-                                case 6:
-                                    exit = true;
-                                    break;
-                                default:
-                                    System.out.println("Operation is not valid");
-                                    break;
-                            }
-                        }
+                        showUserCommand(sc, account);
 
                     }
                     break;
@@ -85,6 +57,41 @@ public class LoginPage {
             }
         }
 
+    }
+
+    /**
+     * show user commands
+     * @param sc
+     * @param account
+     */
+    private static void showUserCommand(Scanner sc, Account account) {
+        System.out.println("Welcome VIP " + account.getUserName() + ", your card number is: " + account.getCardNumber());
+
+        while (true) {
+            System.out.println("You may choose one of the following operations: ");
+            System.out.println("1. Search");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transfer");
+            System.out.println("5. Change password");
+            System.out.println("6. Exit");
+            System.out.println("7. Cancel account");
+
+            int operation = sc.nextInt();
+            switch (operation) {
+                // search info of the current account
+                case 1:
+                    showUserInfo(account);
+                    break;
+                // exit the current account
+                case 6:
+                    System.out.println("Successfully log out, see you next time!");
+                    return;
+                default:
+                    System.out.println("Operation is not valid");
+                    break;
+            }
+        }
     }
 
     /**
