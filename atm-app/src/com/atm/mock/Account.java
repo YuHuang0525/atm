@@ -59,4 +59,22 @@ public class Account {
     public void setLimit(double limit) {
         this.limit = limit;
     }
+
+    /**
+     * add the amount to the balance
+     * @param amount
+     */
+    public void addBalance(double amount) {
+        double cur = this.balance;
+        setBalance(cur + amount);
+    }
+
+    /**
+     * subtract amount from the account balance
+     * @param amount
+     */
+    public void subtractBalance(double amount) {
+        addBalance(amount * -1);
+    }
+
 }

@@ -65,10 +65,10 @@ public class LoginPage {
      * @param account
      */
     private static void showUserCommand(Scanner sc, Account account) {
-        System.out.println("Welcome VIP " + account.getUserName() + ", your card number is: " + account.getCardNumber());
+        System.out.println("Welcome VIP " + account.getUserName() + ", your card number is: " + account.getCardNumber() );
 
         while (true) {
-            System.out.println("You may choose one of the following operations: ");
+            System.out.println("============ You may choose one of the following operations ============");
             System.out.println("1. Search");
             System.out.println("2. Deposit");
             System.out.println("3. Withdraw");
@@ -83,6 +83,16 @@ public class LoginPage {
                 case 1:
                     showUserInfo(account);
                     break;
+
+                // deposit money into the current account
+                case 2:
+                    depositMoney(sc, account);
+                    break;
+
+                // withdraw money
+                case 3:
+                    withdrawMoney(sc, account);
+                    break;
                 // exit the current account
                 case 6:
                     System.out.println("Successfully log out, see you next time!");
@@ -94,14 +104,67 @@ public class LoginPage {
         }
     }
 
+
+    /**
+     * withdraw money from the account
+     * @param sc
+     * @param account
+     */
+    private static void withdrawMoney(Scanner sc, Account account) {
+        System.out.println("============ Withdraw Page ============");
+        // determine if the account balance is over 100
+        if (account.getBalance() < 100) {
+            System.out.println("Your balance is too low, please make the deposit first");
+            return;
+        }
+
+        while (true) {
+            System.out.println("Please enter the amount that you want to withdraw: ");
+            double amount = sc.nextDouble();
+            // check if amount is less than the limit and the balance
+            if (amount <= account.getLimit()) {
+                if (amount <= account.getBalance()) {
+                    // withdraw successful
+                    account.subtractBalance(amount);
+                    System.out.println("Withdraw successfully!");
+                    return;
+                } else {
+                    // amount is below limit but more than current balance
+                    System.out.println("Your balance is not enough, please try again");
+                }
+
+            } else {
+                // amount goes over the limit
+                System.out.println("Amount goes over limit, please try again");
+            }
+        }
+
+    }
+
+    /**
+     * deposit money to the given account
+     * @param sc
+     * @param account
+     */
+    private static void depositMoney(Scanner sc, Account account) {
+        System.out.println("============ Deposit Page ============");
+        System.out.println("Please enter the amount that you want to deposit: ");
+        double amount = sc.nextDouble();
+
+        // add the amount to the account balance
+        account.addBalance(amount);
+
+        System.out.println("Successfully deposited!");
+        showUserInfo(account);
+    }
+
     /**
      * show the user account's information
      * @param account
      */
     private static void showUserInfo(Account account) {
 
-        System.out.println("Welcome to the user information page");
-        System.out.println("Below are your account's information");
+        System.out.println("============ Below are your current account's information ============");
         System.out.println("Card Number: " + account.getCardNumber());
         System.out.println("Name: " + account.getUserName());
         System.out.println("Balance: " + account.getBalance());
