@@ -41,7 +41,7 @@ public class LoginPage {
 
                         System.out.println("Successfully login!");
 
-                        showUserCommand(sc, account);
+                        showUserCommand(sc, account, accounts);
 
                     }
                     break;
@@ -63,8 +63,9 @@ public class LoginPage {
      * show user commands
      * @param sc
      * @param account
+     * @param accounts arraylist that store all the accounts
      */
-    private static void showUserCommand(Scanner sc, Account account) {
+    private static void showUserCommand(Scanner sc, Account account, ArrayList<Account> accounts) {
         System.out.println("Welcome VIP " + account.getUserName() + ", your card number is: " + account.getCardNumber() );
 
         while (true) {
@@ -93,6 +94,11 @@ public class LoginPage {
                 case 3:
                     withdrawMoney(sc, account);
                     break;
+
+                // transfer money
+                case 4:
+                    transferMoney(sc, account, accounts);
+                    break;
                 // exit the current account
                 case 6:
                     System.out.println("Successfully log out, see you next time!");
@@ -102,6 +108,80 @@ public class LoginPage {
                     break;
             }
         }
+    }
+
+    private static void transferMoney(Scanner sc, Account account, ArrayList<Account> accounts) {
+        // first check if there are 2 or more accounts in the system
+        if (accounts.size() == 1) {
+            System.out.println("There's no account in the system besides your account");
+            return;
+        }
+
+        while (true) {
+            System.out.println("Please enter the account's card number that you want to transfer to: ");
+            String cardNumber = sc.next();
+            // check if cardNumber exists in the system and make sure is not the user's own account
+            if (cardNumber.equals(account.getCardNumber())){
+                System.out.println("You cannot transfer to the same card");
+            } else {
+                if (checkCardNumberExist(accounts, cardNumber)) {
+                    // get the account object to which the user is transfering to
+                    Account transferAccount = getAccountByCard(accounts, cardNumber);
+
+                    // confirmation for transfer
+                    confirmTransfer(sc, transferAccount);
+
+                    // once information is confirmed, starts transfering process
+                    while (true) {
+                        System.out.println("Please enter the amount you want to transfer: ");
+                        double amount = sc.nextDouble();
+                        if (amount > account.getBalance()) {
+                            System.out.println("Sorry your balance is not enough, please try again");
+                        } else {
+                            // subtract money from the account balance
+                            account.subtractBalance(amount);
+
+                            // add money to the transfer account balance
+                            transferAccount.addBalance(amount);
+
+                            System.out.println("Successfully transfer!");
+                            showUserInfo(account);
+                            return;
+                        }
+                    }
+
+                } else {
+                    System.out.println("Card number that you just entered does not exist in the system");
+                }
+            }
+        }
+    }
+
+    /**
+     * ask the user to type in the first char of the transfer account's username, for confirmation
+     * @param sc
+     * @param transferAccount
+     */
+    private static void confirmTransfer(Scanner sc, Account transferAccount) {
+
+        String transferName = transferAccount.getUserName();
+        // mask the username to *XY format for later confirmation use
+        String maskedTransferName = "*" + transferName.substring(1);
+
+        while (true) {
+
+            // ask for user confirmation
+            System.out.println("You are trying to transfer to " + maskedTransferName);
+            System.out.println("Please enter the first char of the user's name for confirmation: ");
+            String confirmChar = sc.next();
+
+            if (confirmChar.equals("" + transferName.charAt(0))) {
+                return;
+            } else {
+                System.out.println("Please try again");
+            }
+        }
+
     }
 
 
@@ -130,7 +210,7 @@ public class LoginPage {
                     return;
                 } else {
                     // amount is below limit but more than current balance
-                    System.out.println("Your balance is not enough, please try again");
+                    System.out.println("Your balance is not enough, current balance is " + account.getBalance() + ", please try again");
                 }
 
             } else {
