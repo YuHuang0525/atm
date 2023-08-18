@@ -76,7 +76,7 @@ public class LoginPage {
             System.out.println("4. Transfer");
             System.out.println("5. Change password");
             System.out.println("6. Exit");
-            System.out.println("7. Cancel account");
+            System.out.println("7. Delete account");
 
             int operation = sc.nextInt();
             switch (operation) {
@@ -104,15 +104,47 @@ public class LoginPage {
                 case 5:
                     changePassword(sc, account);
                     break;
+
                 // exit the current account
                 case 6:
                     System.out.println("Successfully log out, see you next time!");
                     return;
+
+                // delete account from the system
+                case 7:
+                    if (deleteAccount(sc, account, accounts)) {
+                        return;
+                    }
+                    break;
+
                 default:
                     System.out.println("Operation is not valid");
                     break;
             }
         }
+    }
+
+    /**
+     * delete the account from the system forever
+     * @param sc
+     * @param account
+     * @param accounts
+     * @return true if successfully deleted else false
+     */
+    private static boolean deleteAccount(Scanner sc, Account account, ArrayList<Account> accounts) {
+        // confirmation message
+        System.out.println("Are you sure you want to delete the account? [Y/N]");
+        String confirm = sc.next();
+        if (confirm.equals("Y")) {
+
+            // delete the account
+            accounts.remove(account);
+
+            System.out.println("Your account has been successfully deleted");
+
+            return true;
+
+        } return false;
     }
 
     /**
