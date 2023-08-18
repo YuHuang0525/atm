@@ -99,6 +99,11 @@ public class LoginPage {
                 case 4:
                     transferMoney(sc, account, accounts);
                     break;
+
+                // change password
+                case 5:
+                    changePassword(sc, account);
+                    break;
                 // exit the current account
                 case 6:
                     System.out.println("Successfully log out, see you next time!");
@@ -106,6 +111,28 @@ public class LoginPage {
                 default:
                     System.out.println("Operation is not valid");
                     break;
+            }
+        }
+    }
+
+    /**
+     * change the password of the input account
+     * @param sc
+     * @param account
+     */
+    private static void changePassword(Scanner sc, Account account) {
+        String oldPassword = account.getPassword();
+
+        while (true) {
+            System.out.println("Please enter the new password: ");
+            String newPassword = sc.next();
+
+            if (newPassword.equals(oldPassword)){
+                System.out.println("New password cannot be same as old password");
+            } else {
+                account.setPassword(newPassword);
+                System.out.println("Password changes successfully");
+                return;
             }
         }
     }
